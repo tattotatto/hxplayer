@@ -1,6 +1,6 @@
 # hxplayer
 
-A new Flutter project.
+精简功能视频播放器，专注于视频播放，支持多种画面比例。基于flutter构建。
 
 ## Getting Started
 
