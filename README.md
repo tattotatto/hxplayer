@@ -1,6 +1,6 @@
 # hxplayer
 
-精简功能视频播放器，专注于视频播放，支持多种画面比例。基于flutter构建。
+A streamlined video player, dedicated to video playback, supporting multiple aspect ratios. Built on Flutter.
 
 ## Getting Started
 
