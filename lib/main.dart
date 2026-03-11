@@ -8,7 +8,7 @@ import 'package:windows_single_instance/windows_single_instance.dart';
 import 'pages/home_page.dart';
 import 'providers/player_provider.dart';
 
-void main() async {
+void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Initialize MediaKit
@@ -19,14 +19,20 @@ void main() async {
   
   // Single Instance handling
   await WindowsSingleInstance.ensureSingleInstance(
-    [], // Arguments to pass to already running instance if needed
+    args, 
     "com.hxplayer.app",
-    onSecondWindow: (args) async {
+    onSecondWindow: (newArgs) async {
        // This callback runs in the existing instance
        await windowManager.show();
        await windowManager.focus();
+       if (newArgs.isNotEmpty) {
+          PlayerProvider.openExternalFile(newArgs.first);
+       }
     },
   );
+
+  // Initial file to open if launched via command line
+  String? initialPath = args.isNotEmpty ? args.first : null;
   
   WindowOptions windowOptions = const WindowOptions(
     size: Size(1280, 720),
@@ -46,7 +52,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => PlayerProvider()),
+        ChangeNotifierProvider(create: (_) => PlayerProvider(initialPath: initialPath)),
       ],
       child: const MyApp(),
     ),

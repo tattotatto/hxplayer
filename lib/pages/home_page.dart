@@ -82,6 +82,16 @@ class _HXControlsOverlayState extends State<HXControlsOverlay> {
     });
   }
 
+  Future<void> _toggleFullScreen() async {
+    bool isFullScreen = await windowManager.isFullScreen();
+    if (!isFullScreen) {
+      await windowManager.setFullScreen(true);
+      await windowManager.setHasShadow(false);
+    } else {
+      await windowManager.setFullScreen(false);
+    }
+  }
+
   @override
   void dispose() {
     _timer?.cancel();
@@ -99,7 +109,15 @@ class _HXControlsOverlayState extends State<HXControlsOverlay> {
           // 1. System Controls (Background)
           MaterialVideoControls(widget.state),
 
-          // 2. Custom Header (Title Bar)
+          // 2. Fullscreen Double-tap Overlay (Visible over native controls)
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onDoubleTap: _toggleFullScreen,
+            ),
+          ),
+
+          // 3. Custom Header (Title Bar)
           AnimatedPositioned(
             duration: const Duration(milliseconds: 400),
             top: _visible ? 0 : -80,
@@ -108,7 +126,7 @@ class _HXControlsOverlayState extends State<HXControlsOverlay> {
             child: _buildHeader(),
           ),
 
-          // 3. Custom Floating Menu
+          // 4. Custom Floating Menu
           AnimatedPositioned(
             duration: const Duration(milliseconds: 400),
             bottom: _visible ? 100 : -140, // Floating above system seekbar
@@ -119,7 +137,7 @@ class _HXControlsOverlayState extends State<HXControlsOverlay> {
             ),
           ),
 
-          // 4. AI Subtitle Overlay
+          // 5. AI Subtitle Overlay
           if (widget.playerProvider.currentTranslation.isNotEmpty)
             Positioned(
               bottom: _visible ? 180 : 80,
@@ -152,15 +170,7 @@ class _HXControlsOverlayState extends State<HXControlsOverlay> {
   Widget _buildHeader() {
     return GestureDetector(
       onPanStart: (details) => windowManager.startDragging(),
-      onDoubleTap: () async {
-        bool isFullScreen = await windowManager.isFullScreen();
-        if (!isFullScreen) {
-          await windowManager.setFullScreen(true);
-          await windowManager.setHasShadow(false);
-        } else {
-          await windowManager.setFullScreen(false);
-        }
-      },
+      onDoubleTap: _toggleFullScreen,
       child: Container(
         height: 60,
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -266,15 +276,7 @@ class _HXControlsOverlayState extends State<HXControlsOverlay> {
             _buildControlBtn(
               icon: Icons.fullscreen_rounded,
               label: '全屏',
-              onPressed: () async {
-                bool isFullScreen = await windowManager.isFullScreen();
-                if (!isFullScreen) {
-                  await windowManager.setFullScreen(true);
-                  await windowManager.setHasShadow(false);
-                } else {
-                  await windowManager.setFullScreen(false);
-                }
-              },
+              onPressed: _toggleFullScreen,
             ),
             _buildControlBtn(
               icon: Icons.settings_outlined,

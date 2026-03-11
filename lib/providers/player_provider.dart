@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -10,6 +11,9 @@ import 'dart:convert';
 import 'package:path/path.dart' as p;
 
 class PlayerProvider extends ChangeNotifier {
+  static final StreamController<String> _externalOpenController = StreamController<String>.broadcast();
+  static void openExternalFile(String path) => _externalOpenController.add(path);
+
   late final Player _player;
   late final VideoController _controller;
   
@@ -39,9 +43,14 @@ class PlayerProvider extends ChangeNotifier {
   BoxFit _videoFit = BoxFit.contain;
   BoxFit get videoFit => _videoFit;
 
-  PlayerProvider() {
+  PlayerProvider({String? initialPath}) {
     _player = Player();
     _controller = VideoController(_player);
+    
+    // Listen to external file open requests (e.g. from single instance)
+    _externalOpenController.stream.listen((path) {
+      playFile(path);
+    });
     
     // Listen to completion for auto-play next
     _player.stream.completed.listen((completed) {
@@ -70,16 +79,16 @@ class PlayerProvider extends ChangeNotifier {
        notifyListeners(); // Force UI update for seekbars
     });
 
-    // Handle position updates (original, now combined with history save)
-    // _player.stream.position.listen((pos) {
-    //    notifyListeners(); // Force UI update for seekbars
-    // });
-
     _player.stream.playing.listen((isPlaying) {
        notifyListeners();
     });
 
-    _loadHistory();
+    // If initial path is provided via command line, play it; otherwise load history
+    if (initialPath != null) {
+      playFile(initialPath);
+    } else {
+      _loadHistory();
+    }
   }
 
   void setApiKey(String key) {
@@ -103,12 +112,16 @@ class PlayerProvider extends ChangeNotifier {
     );
 
     if (result != null && result.files.single.path != null) {
-      final path = result.files.single.path!;
-      await _loadDirectoryPlaylist(path);
-      await _player.open(Media(path));
-      _currentFilePath = path;
-      notifyListeners();
+      await playFile(result.files.single.path!);
     }
+  }
+
+  Future<void> playFile(String path) async {
+    await _loadDirectoryPlaylist(path);
+    await _player.open(Media(path));
+    _currentFilePath = path;
+    _saveHistory(); // Save immediately when a file is opened
+    notifyListeners();
   }
 
   Future<void> _loadDirectoryPlaylist(String filePath) async {
