@@ -1,6 +1,6 @@
 # hxplayer
 
-A new Flutter project.
+A streamlined video player, dedicated to video playback, supporting multiple aspect ratios. Built on Flutter.
 
 ## Getting Started
 
