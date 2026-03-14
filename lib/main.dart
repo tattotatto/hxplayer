@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:window_manager/window_manager.dart';
@@ -11,18 +12,17 @@ import 'providers/player_provider.dart';
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize MediaKit
+  // 初始化 MediaKit
   MediaKit.ensureInitialized();
   
-  // Initialize WindowManager
+  // 初始化 WindowManager
   await windowManager.ensureInitialized();
   
-  // Single Instance handling
+  // 单实例处理
   await WindowsSingleInstance.ensureSingleInstance(
     args, 
     "com.hxplayer.app",
     onSecondWindow: (newArgs) async {
-       // This callback runs in the existing instance
        await windowManager.show();
        await windowManager.focus();
        if (newArgs.isNotEmpty) {
@@ -31,13 +31,12 @@ void main(List<String> args) async {
     },
   );
 
-  // Initial file to open if launched via command line
   String? initialPath = args.isNotEmpty ? args.first : null;
   
   WindowOptions windowOptions = const WindowOptions(
     size: Size(1280, 720),
     center: true,
-    backgroundColor: Colors.black, // Changed from transparent to avoid border bleeding
+    backgroundColor: Colors.black,
     skipTaskbar: false,
     titleBarStyle: TitleBarStyle.hidden,
     title: 'HXPLAYER',
@@ -46,7 +45,7 @@ void main(List<String> args) async {
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();
     await windowManager.focus();
-    await windowManager.setHasShadow(false); // Remove system shadow which can cause gray lines
+    await windowManager.setHasShadow(false);
   });
 
   runApp(

@@ -45,6 +45,11 @@ dependencies:
   provider: ^6.1.2
   path: ^1.9.0
   windows_single_instance: ^1.0.1
+  http: ^1.6.0
+  archive: ^4.0.9
+  shared_preferences: ^2.5.4
+  package_info_plus: ^8.1.0
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
