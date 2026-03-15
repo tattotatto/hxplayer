@@ -2,6 +2,7 @@
 
 A streamlined video player, dedicated to video playback, supporting multiple aspect ratios. Built on Flutter.
 
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
