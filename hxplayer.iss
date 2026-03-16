@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define ToolName "HXPLAYER"
-#define ToolVersion "1.0.0"
+#define ToolVersion "1.0.1"
 #define ToolPublisher "Hongxi Technology"
 #define ToolURL "https://hxplayer.hongxikeji.cn"
 #define ToolExeName "hxplayer.exe"

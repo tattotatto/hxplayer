@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'dart:convert';
+import 'package:window_manager/window_manager.dart';
 import 'package:path/path.dart' as p;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -82,10 +83,12 @@ class PlayerProvider extends ChangeNotifier {
   double _audioDelay = 0;
   double _subDelay = 0;
   double _subPos = 100;
+  bool _isAlwaysOnTop = false;
 
   double get audioDelay => _audioDelay;
   double get subDelay => _subDelay;
   double get subPos => _subPos;
+  bool get isAlwaysOnTop => _isAlwaysOnTop;
 
   // 字幕样式微调
   double _subFontSize = 72;
@@ -268,6 +271,10 @@ class PlayerProvider extends ChangeNotifier {
         'https://dashscope.aliyuncs.com/compatible-mode/v1';
     _aiModelName = prefs.getString('ai_model') ?? 'qwen-plus';
     _apiKey = prefs.getString('ai_api_key') ?? '';
+    _isAlwaysOnTop = prefs.getBool('is_always_on_top') ?? false;
+    if (_isAlwaysOnTop) {
+      windowManager.setAlwaysOnTop(true);
+    }
   }
 
   Future<void> saveAiPreferences({
@@ -731,6 +738,14 @@ class PlayerProvider extends ChangeNotifier {
       _subFont = font;
       setMpvProperty('sub-font', font);
     }
+    notifyListeners();
+  }
+
+  Future<void> toggleAlwaysOnTop() async {
+    _isAlwaysOnTop = !_isAlwaysOnTop;
+    await windowManager.setAlwaysOnTop(_isAlwaysOnTop);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('is_always_on_top', _isAlwaysOnTop);
     notifyListeners();
   }
 

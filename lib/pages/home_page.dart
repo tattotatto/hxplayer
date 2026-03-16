@@ -379,6 +379,19 @@ class _HXControlsOverlayState extends State<HXControlsOverlay> {
               ),
             const Spacer(),
             IconButton(
+              onPressed: () => widget.playerProvider.toggleAlwaysOnTop(),
+              tooltip: widget.playerProvider.isAlwaysOnTop ? '取消置顶' : '置顶显示',
+              icon: Icon(
+                widget.playerProvider.isAlwaysOnTop
+                    ? Icons.push_pin
+                    : Icons.push_pin_outlined,
+                size: 18,
+                color: widget.playerProvider.isAlwaysOnTop
+                    ? const Color(0xFF5C6BC0)
+                    : Colors.white70,
+              ),
+            ),
+            IconButton(
               onPressed: () => windowManager.minimize(),
               icon: const Icon(Icons.remove, size: 18, color: Colors.white70),
             ),
@@ -664,7 +677,7 @@ class _HXControlsOverlayState extends State<HXControlsOverlay> {
                   Row(
                     children: [
                       const Text(
-                        '当前版本: 1.0.0',
+                        '当前版本: 1.0.1',
                         style: TextStyle(color: Colors.white38, fontSize: 11),
                       ),
                       const Spacer(),
