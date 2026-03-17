@@ -16,7 +16,11 @@ void main(List<String> args) async {
   MediaKit.ensureInitialized();
   
   // 初始化 WindowManager
-  await windowManager.ensureInitialized();
+  try {
+    await windowManager.ensureInitialized();
+  } catch (e) {
+    debugPrint('WindowManager initialization failed: $e');
+  }
   
   // 单实例处理
   if (Platform.isWindows) {
@@ -35,12 +39,14 @@ void main(List<String> args) async {
 
   String? initialPath = args.isNotEmpty ? args.first : null;
   
-  WindowOptions windowOptions = const WindowOptions(
-    size: Size(1280, 720),
+  WindowOptions windowOptions = WindowOptions(
+    size: const Size(1280, 720),
     center: true,
     backgroundColor: Colors.black,
     skipTaskbar: false,
-    titleBarStyle: TitleBarStyle.hidden,
+    titleBarStyle: (Platform.isWindows || Platform.isMacOS) 
+        ? TitleBarStyle.hidden 
+        : TitleBarStyle.normal,
     title: 'HXPLAYER',
   );
   
