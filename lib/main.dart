@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:window_manager/window_manager.dart';
@@ -19,17 +19,19 @@ void main(List<String> args) async {
   await windowManager.ensureInitialized();
   
   // 单实例处理
-  await WindowsSingleInstance.ensureSingleInstance(
-    args, 
-    "com.hxplayer.app",
-    onSecondWindow: (newArgs) async {
-       await windowManager.show();
-       await windowManager.focus();
-       if (newArgs.isNotEmpty) {
-          PlayerProvider.openExternalFile(newArgs.first);
-       }
-    },
-  );
+  if (Platform.isWindows) {
+    await WindowsSingleInstance.ensureSingleInstance(
+      args, 
+      "com.hxplayer.app",
+      onSecondWindow: (newArgs) async {
+         await windowManager.show();
+         await windowManager.focus();
+         if (newArgs.isNotEmpty) {
+            PlayerProvider.openExternalFile(newArgs.first);
+         }
+      },
+    );
+  }
 
   String? initialPath = args.isNotEmpty ? args.first : null;
   
